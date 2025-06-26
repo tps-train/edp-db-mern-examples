@@ -1,0 +1,1 @@
+db.socks.find( { $or: [ {"forFoot": "Left"}, {"size": 9} ]})

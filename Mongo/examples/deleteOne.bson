@@ -1,0 +1,1 @@
+db.socks.deleteOne( { sockOwner: 'Steve' } )

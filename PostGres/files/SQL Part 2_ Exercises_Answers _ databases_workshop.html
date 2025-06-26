@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 2: Exercises | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 2: Exercises">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html","headline":"SQL Part 2: Exercises","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 2_ Exercises_Answers _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-2-exercises">SQL Part 2: Exercises</h1>
+<hr>
+
+<p>There may be other ways to achieve the same result.  Remember that SQL commands are not case sensitive (but data values are).</p>
+
+<p>All of these exercises use the <code class="highlighter-rouge">dvdrental</code> database.</p>
+
+<p>Exercises often use multiple commands or aspects of SQL, but they are titled/grouped by their focus.</p>
+
+<h2 id="exercise-subqueries">Exercise: Subqueries<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-subqueries" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What films are actors with ids 129 and 195 in together?</p>
+
+<p>Challenge: How many actors are in more films than actor id 47?  Hint: this takes 2 subqueries (one nested in the other).  Work inside out: 1) how many films is actor 47 in; 2) which actors are in more films than this? 3) Count those actors.</p>
+
+<h4 id="solution">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solution" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span> <span class="k">FROM</span> <span class="n">film_actor</span>
+<span class="k">WHERE</span> <span class="n">actor_id</span><span class="o">=</span><span class="mi">129</span>
+<span class="k">AND</span> <span class="n">film_id</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">film_id</span> <span class="k">FROM</span> <span class="n">film_actor</span> <span class="k">WHERE</span> <span class="n">actor_id</span><span class="o">=</span><span class="mi">195</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">FROM</span>
+  <span class="p">(</span><span class="k">SELECT</span> <span class="n">actor_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span>
+   <span class="k">FROM</span> <span class="n">film_actor</span>
+   <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">actor_id</span>
+   <span class="k">HAVING</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="c1">-- nested subquery</span>
+   		 			 <span class="k">FROM</span> <span class="n">film_actor</span> 
+   		 			 <span class="k">WHERE</span> <span class="n">actor_id</span><span class="o">=</span><span class="mi">47</span><span class="p">)</span> <span class="c1">-- end nested subquery</span>
+   	<span class="p">)</span> <span class="n">foo</span><span class="p">;</span> <span class="c1">-- ending and aliasing subquery</span>
+</code></pre></div></div>
+
+<h2 id="exercise-inner-joins">Exercise: Inner Joins<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-inner-joins" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Select <code class="highlighter-rouge">first_name</code>, <code class="highlighter-rouge">last_name</code>, <code class="highlighter-rouge">amount</code>, and <code class="highlighter-rouge">payment_date</code> by joining the customer and payment tables.</p>
+
+<p>Select film_id, category_id, and name from joining the film_category and category tables, only where the category_id is less than 10.</p>
+
+<h4 id="solutions">Solutions<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solutions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">payment_date</span>
+<span class="k">FROM</span> <span class="n">customer</span> <span class="k">c</span> 
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">payment</span> <span class="n">p</span>
+<span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="o">=</span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="k">c</span><span class="p">.</span><span class="n">category_id</span><span class="p">,</span> <span class="n">name</span>
+<span class="k">FROM</span> <span class="n">film_category</span> <span class="n">fc</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">category</span> <span class="k">c</span>
+<span class="k">ON</span> <span class="n">fc</span><span class="p">.</span><span class="n">category_id</span> <span class="o">=</span> <span class="k">c</span><span class="p">.</span><span class="n">category_id</span>
+<span class="k">WHERE</span> <span class="k">c</span><span class="p">.</span><span class="n">category</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>TODO: check above</p>
+
+<h2 id="exercise-joining-and-grouping-customer-spending">Exercise: Joining and Grouping: Customer Spending<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-joining-and-grouping-customer-spending" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Get a list of the names of customers who have spent more than $150, along with their total spending.</p>
+
+<p>Who is the customer with the highest average payment amount?</p>
+
+<h4 id="solution-1">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solution-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">customer</span> <span class="k">c</span> 
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">payment</span> <span class="n">p</span>
+<span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="o">=</span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span>
+<span class="k">HAVING</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">avg</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">customer</span> <span class="k">c</span> 
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">payment</span> <span class="n">p</span>
+<span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="o">=</span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">avg</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-joining-customers-payments-and-staff">Exercise: Joining Customers, Payments, and Staff<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-joining-customers-payments-and-staff" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Join the customer and payment tables together with an inner join; select customer id, name, amount, and date and order by customer id.  Then join the staff table to them as well to add the staff’s name.</p>
+
+<h4 id="solutions-1">Solutions<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solutions-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span>
+ <span class="n">first_name</span><span class="p">,</span>
+ <span class="n">last_name</span><span class="p">,</span>
+ <span class="n">amount</span><span class="p">,</span>
+ <span class="n">payment_date</span>
+<span class="k">FROM</span>
+ <span class="n">customer</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">payment</span> <span class="k">ON</span> <span class="n">payment</span><span class="p">.</span><span class="n">customer_id</span> <span class="o">=</span> <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span>
+<span class="k">ORDER</span> <span class="k">BY</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">first_name</span> <span class="n">customer_first_name</span><span class="p">,</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">last_name</span> <span class="n">customer_last_name</span><span class="p">,</span>
+ <span class="n">staff</span><span class="p">.</span><span class="n">first_name</span> <span class="n">staff_first_name</span><span class="p">,</span>
+ <span class="n">staff</span><span class="p">.</span><span class="n">last_name</span> <span class="n">staff_last_name</span><span class="p">,</span>
+ <span class="n">amount</span><span class="p">,</span>
+ <span class="n">payment_date</span>
+<span class="k">FROM</span>
+ <span class="n">customer</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">payment</span> <span class="k">ON</span> <span class="n">payment</span><span class="p">.</span><span class="n">customer_id</span> <span class="o">=</span> <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">staff</span> <span class="k">ON</span> <span class="n">payment</span><span class="p">.</span><span class="n">staff_id</span> <span class="o">=</span> <span class="n">staff</span><span class="p">.</span><span class="n">staff_id</span>
+<span class="k">ORDER</span> <span class="k">BY</span>
+ <span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-joining-for-better-addresses">Exercise: Joining for Better Addresses<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-joining-for-better-addresses" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Create a list of addresses that includes the name of the city instead of an ID number and the name of the country as well.</p>
+
+<h4 id="solution-2">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solution-2" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">address</span><span class="p">,</span> <span class="n">address2</span><span class="p">,</span> <span class="n">district</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">city</span><span class="p">,</span> <span class="n">country</span> 
+<span class="k">FROM</span> <span class="n">address</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">city</span> <span class="k">ON</span> <span class="n">address</span><span class="p">.</span><span class="n">city_id</span><span class="o">=</span><span class="n">city</span><span class="p">.</span><span class="n">city_id</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">country</span> <span class="k">ON</span> <span class="n">city</span><span class="p">.</span><span class="n">country_id</span> <span class="o">=</span> <span class="n">country</span><span class="p">.</span><span class="n">country_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">address</span><span class="p">,</span> <span class="n">address2</span><span class="p">,</span> <span class="n">district</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">city</span><span class="p">,</span> <span class="n">country</span> 
+<span class="k">FROM</span> <span class="n">address</span><span class="p">,</span> <span class="n">city</span><span class="p">,</span> <span class="n">country</span>
+<span class="k">WHERE</span> <span class="n">address</span><span class="p">.</span><span class="n">city_id</span><span class="o">=</span><span class="n">city</span><span class="p">.</span><span class="n">city_id</span> 
+<span class="k">AND</span> <span class="n">city</span><span class="p">.</span><span class="n">country_id</span> <span class="o">=</span> <span class="n">country</span><span class="p">.</span><span class="n">country_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-joining-and-grouping-films-and-actors">Exercise: Joining and Grouping: Films and Actors<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#exercise-joining-and-grouping-films-and-actors" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Repeating an exercise from Part 1, but adding in information from additional tables:  Which film (<em>by title</em>) has the most actors?  Which actor (<em>by name</em>) is in the most films?</p>
+
+<p>Challenge: Which two actors have been in the most films together?  Hint: You can join a table to itself by including it twice with different aliases.  Hint 2: Try writing the query first to find the answer in terms of actor ids (not names); then for a super challenge (it takes a complicated query), rewrite it to get the actor names instead of the IDs.  Hint 3: make sure not to count pairs twice (a in the movie with b and b in the movie with a) and avoid counting cases of an actor being in a movie with themselves.</p>
+
+<h4 id="solution-3">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part2_exercises_with_answers.html#solution-3" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">film</span><span class="p">,</span> <span class="n">film_actor</span>
+<span class="k">WHERE</span> <span class="n">film</span><span class="p">.</span><span class="n">film_id</span><span class="o">=</span><span class="n">film_actor</span><span class="p">.</span><span class="n">film_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">title</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">actor</span><span class="p">,</span> <span class="n">film_actor</span>
+<span class="k">WHERE</span> <span class="n">actor</span><span class="p">.</span><span class="n">actor_id</span><span class="o">=</span><span class="n">film_actor</span><span class="p">.</span><span class="n">actor_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>** Alternative Syntax:**</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">film</span><span class="p">,</span> <span class="n">film_actor</span>
+<span class="k">WHERE</span> <span class="n">film</span><span class="p">.</span><span class="n">film_id</span><span class="o">=</span><span class="n">film_actor</span><span class="p">.</span><span class="n">film_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">title</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">actor</span><span class="p">,</span> <span class="n">film_actor</span>
+<span class="k">WHERE</span> <span class="n">actor</span><span class="p">.</span><span class="n">actor_id</span><span class="o">=</span><span class="n">film_actor</span><span class="p">.</span><span class="n">actor_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">film_actor</span> <span class="n">a</span><span class="p">,</span> <span class="n">film_actor</span> <span class="n">b</span>  <span class="c1">-- join the table to itself</span>
+<span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">film_id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">film_id</span>  <span class="c1">-- on the film id</span>
+      <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span>  <span class="c1">-- avoid duplicates and matching to the same actor</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Super Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span> <span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">d</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">d</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">fcount</span>
+<span class="k">FROM</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span> <span class="k">AS</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span> <span class="k">AS</span> <span class="n">a2</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">fcount</span>
+<span class="k">FROM</span> <span class="n">film_actor</span> <span class="n">a</span><span class="p">,</span> <span class="n">film_actor</span> <span class="n">b</span>  <span class="c1">-- join the table to itself</span>
+<span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">film_id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">film_id</span>  <span class="c1">-- on the film id</span>
+      <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span>  <span class="c1">-- avoid duplicates and matching to the same actor</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">actor_id</span><span class="p">)</span> <span class="n">foo</span>  <span class="c1">-- this is the query from above</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">actor</span> <span class="k">c</span> <span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">actor_id</span><span class="o">=</span><span class="n">a1</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">actor</span> <span class="n">d</span> <span class="k">ON</span> <span class="n">d</span><span class="p">.</span><span class="n">actor_id</span><span class="o">=</span><span class="n">a2</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">fcount</span> <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>There are other ways to accomplish the above.</p>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part2_exercises_with_answers.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 2_ Exercises_Answers _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

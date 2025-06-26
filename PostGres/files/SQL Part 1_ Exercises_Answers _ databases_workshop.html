@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 1: Exercises | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 1: Exercises">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html","headline":"SQL Part 1: Exercises","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 1_ Exercises_Answers _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-1-exercises">SQL Part 1: Exercises</h1>
+<hr>
+
+<p>There may be other ways to achieve the same result.  Remember that SQL commands are not case sensitive (but data values are).</p>
+
+<p>All of these exercises use the <code class="highlighter-rouge">dvdrental</code> database.</p>
+
+<p>Exercises often use multiple commands or aspects of SQL, but they are titled/grouped by their focus.</p>
+
+<h2 id="exercise-describe-commands">Exercise: Describe Commands<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-describe-commands" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Get a list of the tables in the database.</p>
+
+<h4 id="solution">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="n">dt</span>
+</code></pre></div></div>
+
+<p>Note that you can type a string with wildcards (*) after the <code class="highlighter-rouge">dt</code> to just get tables with names matching the pattern.  Example:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="n">dt</span> <span class="k">c</span><span class="o">*</span>
+</code></pre></div></div>
+
+<p>To get tables with names that start with c.</p>
+
+<h2 id="exercise-select">Exercise: Select<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-select" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Get a list of actors with the first name Julia.</p>
+
+<p>Get a list of actors with the first name Chris, Cameron, or Cuba.</p>
+
+<p>Select the row from customer for customer named Jamie Rice.</p>
+
+<p>Select amount and payment_date from payment where the amount paid was less than $1.</p>
+
+<h4 id="solution-1">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span> <span class="k">WHERE</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Julia'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Remember that string/text values are case-sensitive, so ‘julia’ or ‘JULIA’ will not match.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">WHERE</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Chris'</span> 
+<span class="k">OR</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Cameron'</span> 
+<span class="k">OR</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Cuba'</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">WHERE</span> <span class="n">first_name</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'Chris'</span><span class="p">,</span> <span class="s1">'Cameron'</span><span class="p">,</span> <span class="s1">'Cuba'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Either of the above will work for the second task.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">customer</span>
+<span class="k">WHERE</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Jamie'</span> <span class="k">AND</span> <span class="n">last_name</span><span class="o">=</span><span class="s1">'Rice'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">amount</span><span class="p">,</span> <span class="n">payment_date</span> <span class="k">FROM</span> <span class="n">payment</span> 
+<span class="k">WHERE</span> <span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-distinct">Exercise: Distinct<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-distinct" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What are the different rental durations that the store allows?</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">rental_duration</span> <span class="k">FROM</span> <span class="n">film</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-order-by">Exercise: Order By<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-order-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What are the IDs of the last 3 customers to return a rental?</p>
+
+<h4 id="solution-2">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-2" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span> <span class="k">FROM</span> <span class="n">rental</span> 
+<span class="k">WHERE</span> <span class="n">return_date</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="c1">-- without this, you get NULL values first</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">return_date</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-counting">Exercise: Counting<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-counting" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>How many films are rated NC-17?  How many are rated PG or PG-13?</p>
+
+<p>Challenge: How many different customers have entries in the rental table?  <a href="http://www.w3resource.com/sql/aggregate-functions/count-with-distinct.php">Hint</a></p>
+
+<h4 id="solution-3">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-3" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span> 
+<span class="k">WHERE</span> <span class="n">rating</span> <span class="o">=</span> <span class="s1">'NC-17'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span> 
+<span class="k">WHERE</span> <span class="n">rating</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'PG'</span><span class="p">,</span> <span class="s1">'PG-13'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span> 
+<span class="k">WHERE</span> <span class="n">rating</span> <span class="o">=</span> <span class="s1">'PG'</span> <span class="k">OR</span> <span class="n">rating</span> <span class="o">=</span> <span class="s1">'PG-13'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">customer_id</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">rental</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-group-by">Exercise: Group By<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-group-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Does the average replacement cost of a film differ by rating?</p>
+
+<p>Challenge: Are there any customers with the same last name?</p>
+
+<h4 id="solution-4">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-4" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">rating</span><span class="p">,</span> <span class="k">avg</span><span class="p">(</span><span class="n">replacement_cost</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">rating</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">customer</span> 
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">last_name</span> <span class="k">HAVING</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Answer: no</p>
+
+<h2 id="exercise-functions">Exercise: Functions<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-functions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What is the average rental rate of films?  Can you round the result to 2 decimal places?</p>
+
+<p>Challenge: What is the average time that people have rentals before returning?  Hint: the output you’ll get may include a number of hours &gt; 24.  You can use the function <code class="highlighter-rouge">justify_interval</code> on the result to get output that looks more like you might expect.</p>
+
+<p>Challenge 2: Select the 10 actors who have the longest names (first and last name combined).</p>
+
+<h4 id="solution-5">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-5" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">avg</span><span class="p">(</span><span class="n">rental_rate</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">rental_rate</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">film</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Challenge:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">justify_interval</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">return_date</span><span class="o">-</span><span class="n">rental_date</span><span class="p">))</span> <span class="k">FROM</span> <span class="n">rental</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Challenge 2:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">concat</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">),</span> <span class="k">length</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">))</span> 
+<span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">length</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">))</span> <span class="k">desc</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">first_name</span> <span class="o">||</span> <span class="n">last_name</span><span class="p">,</span> <span class="k">length</span><span class="p">(</span><span class="n">first_name</span> <span class="o">||</span> <span class="n">last_name</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">length</span><span class="p">(</span><span class="n">first_name</span> <span class="o">||</span> <span class="n">last_name</span><span class="p">)</span>  <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-count-group-and-order">Exercise: Count, Group, and Order<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#exercise-count-group-and-order" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Which film (id) has the most actors?  Which actor (id) is in the most films?</p>
+
+<h4 id="solution-6">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html#solution-6" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">film_actor</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">film_id</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">actor_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">film_actor</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">actor_id</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="n">film_id</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part1_exercises_with_answers.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 1_ Exercises_Answers _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

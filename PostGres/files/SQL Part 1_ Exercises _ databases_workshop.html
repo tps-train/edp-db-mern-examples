@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 1: Exercises | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 1: Exercises">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html","headline":"SQL Part 1: Exercises","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 1_ Exercises _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-1-exercises">SQL Part 1: Exercises</h1>
+<hr>
+
+<p>There may be other ways to achieve the same result.  Remember that SQL commands are not case sensitive (but data values are).</p>
+
+<p>All of these exercises use the <code class="highlighter-rouge">dvdrental</code> database.</p>
+
+<p>Exercises often use multiple commands or aspects of SQL, but they are titled/grouped by their focus.</p>
+
+<p><a href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises_with_answers.html">Answers</a></p>
+
+<h2 id="exercise-describe-commands">Exercise: Describe Commands<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-describe-commands" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Get a list of the tables in the database.</p>
+
+<h2 id="exercise-select">Exercise: Select<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-select" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Get a list of actors with the first name Julia.</p>
+
+<p>Get a list of actors with the first name Chris, Cameron, or Cuba.</p>
+
+<p>Select the row from customer for customer named Jamie Rice.</p>
+
+<p>Select amount and payment_date from payment where the amount paid was less than $1.</p>
+
+<h2 id="exercise-distinct">Exercise: Distinct<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-distinct" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What are the different rental durations that the store allows?</p>
+
+<h2 id="exercise-order-by">Exercise: Order By<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-order-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What are the IDs of the last 3 customers to return a rental?</p>
+
+<h2 id="exercise-counting">Exercise: Counting<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-counting" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>How many films are rated NC-17?  How many are rated PG or PG-13?</p>
+
+<p>Challenge: How many different customers have entries in the rental table?  <a href="http://www.w3resource.com/sql/aggregate-functions/count-with-distinct.php">Hint</a></p>
+
+<h2 id="exercise-group-by">Exercise: Group By<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-group-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Does the average replacement cost of a film differ by rating?</p>
+
+<p>Challenge: Are there any customers with the same last name?</p>
+
+<h2 id="exercise-functions">Exercise: Functions<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-functions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>What is the average rental rate of films?  Can you round the result to 2 decimal places?</p>
+
+<p>Challenge: What is the average time that people have rentals before returning?  Hint: the output you’ll get may include a number of hours &gt; 24.  You can use the function <code class="highlighter-rouge">justify_interval</code> on the result to get output that looks more like you might expect.</p>
+
+<p>Challenge 2: Select the 10 actors who have the longest names (first and last name combined).</p>
+
+<h2 id="exercise-count-group-and-order">Exercise: Count, Group, and Order<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html#exercise-count-group-and-order" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Which film (id) has the most actors?  Which actor (id) is in the most films?</p>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part1_exercises.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 1_ Exercises _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

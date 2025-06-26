@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://nuitrcs.github.io/databases_workshop/sql/part4.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 4 | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 4">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part4.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part4.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part4.html","headline":"SQL Part 4","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 4 _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-4">SQL Part 4</h1>
+
+<ul>
+  <li>Transactions</li>
+  <li>Update</li>
+  <li>Delete</li>
+  <li>Alter</li>
+  <li>Drop</li>
+</ul>
+
+<h1 id="changing-and-deleting-tables">Changing and Deleting Tables</h1>
+
+<h2 id="alter">Alter<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#alter" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>You can <a href="https://www.postgresql.org/docs/current/static/sql-altertable.html">alter</a> a table after it’s created.  Things you can do include: renaming the table, renaming columns, changing column types, adding or dropping constraints, adding or changing default values.</p>
+
+<h2 id="drop">Drop<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#drop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>To delete a table, use the drop command.  This cannot be undone, so best to really mean it and do it in a transaction.</p>
+
+<h1 id="transactions">Transactions</h1>
+
+<p>SQL commands are executed immediately, unless you put them in a transaction.  With select statements, this doesn’t make much of a difference.  But when altering the database, you often want to make sure commands execute correctly before committing the change to the database.</p>
+
+<p>In PostgreSQL, transactions begin with <code class="highlighter-rouge">begin;</code> and end with either <code class="highlighter-rouge">commit;</code> to commit the change or <code class="highlighter-rouge">rollback;</code> to undo everything since <code class="highlighter-rouge">begin</code>.  If there is an error in a transaction, you can’t commit it; you have to use rollback to roll it back and then try again.  Note: The SQL standard for this is <code class="highlighter-rouge">START TRANSACTION</code>.</p>
+
+<p>Let’s see how transactions work.  We’ll create a table and add some data to work with.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">color</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">hex</span> <span class="n">text</span> <span class="c1">-- hex color specification used with html</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">color</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">hex</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'beige'</span><span class="p">,</span> <span class="s1">'#F5F5DC'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'coral'</span><span class="p">,</span> <span class="s1">'#FF7F50'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="s1">'#00FFFF'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'gold'</span><span class="p">,</span> <span class="s1">'#FFD700'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now, let’s <a href="https://www.postgresql.org/docs/current/static/sql-altertable.html">alter</a> this table in a transaction; we’ll add a boolean (true/false) column called websafe and have it default to true:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">color</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">websafe</span> <span class="n">boolean</span> <span class="k">default</span> <span class="k">true</span><span class="p">;</span>
+
+<span class="err">\</span><span class="n">d</span> <span class="n">color</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>If I made a typo in the alter statement, and then I try to commit, PostgreSQL won’t let me.  It will rollback the transaction instead of committing.  Also, once you have an error in a PostgreSQL transaction, you can’t run any other commands.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="k">begin</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">turkey</span><span class="p">;</span>
+<span class="n">ERROR</span><span class="p">:</span>  <span class="n">relation</span> <span class="nv">"turkey"</span> <span class="n">does</span> <span class="k">not</span> <span class="n">exist</span>
+<span class="n">LINE</span> <span class="mi">1</span><span class="p">:</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">turkey</span><span class="p">;</span>
+                      <span class="o">^</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+<span class="n">ERROR</span><span class="p">:</span>  <span class="k">current</span> <span class="n">transaction</span> <span class="k">is</span> <span class="n">aborted</span><span class="p">,</span> <span class="n">commands</span> <span class="n">ignored</span> <span class="k">until</span> <span class="k">end</span> <span class="k">of</span> <span class="n">transaction</span> <span class="n">block</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">commit</span><span class="p">;</span>
+<span class="k">ROLLBACK</span>
+</code></pre></div></div>
+
+<p>Breaking this down, <code class="highlighter-rouge">select * from turkey;</code> caused an error, because we don’t have a table named turkey.  This error is printed.  Then we tried to run a valid query <code class="highlighter-rouge">select * from color;</code> but instead of getting the result, we get an error telling us to end the transaction.  We use <code class="highlighter-rouge">commit;</code> to end the transaction, but the feedback output we receive is <code class="highlighter-rouge">ROLLBACK</code>, indicating that the transaction was rolled back, not committed.  Since we were just issuing select statements, they would have had no effect on the database anyway.</p>
+
+<p>Let’s do an example with commands that do change the database.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="k">begin</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">TABLE</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+<span class="n">ERROR</span><span class="p">:</span>  <span class="n">relation</span> <span class="nv">"color"</span> <span class="n">does</span> <span class="k">not</span> <span class="n">exist</span>
+<span class="n">LINE</span> <span class="mi">1</span><span class="p">:</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+                      <span class="o">^</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">commit</span><span class="p">;</span>
+<span class="k">ROLLBACK</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span> <span class="n">name</span>  <span class="o">|</span>   <span class="n">hex</span>   <span class="o">|</span> <span class="n">websafe</span> 
+<span class="c1">----+-------+---------+---------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">beige</span> <span class="o">|</span> <span class="o">#</span><span class="n">F5F5DC</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">coral</span> <span class="o">|</span> <span class="o">#</span><span class="n">FF7F50</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">cyan</span>  <span class="o">|</span> <span class="o">#</span><span class="mi">00</span><span class="n">FFFF</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">4</span> <span class="o">|</span> <span class="n">gold</span>  <span class="o">|</span> <span class="o">#</span><span class="n">FFD700</span> <span class="o">|</span> <span class="n">t</span>
+<span class="p">(</span><span class="mi">4</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Because the transaction was rolled back, the colors table was not dropped.  We can also explicitly use the rollback command on our own:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="k">begin</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">drop</span> <span class="k">table</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">TABLE</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">rollback</span><span class="p">;</span>
+<span class="k">ROLLBACK</span>
+
+<span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">color</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span> <span class="n">name</span>  <span class="o">|</span>   <span class="n">hex</span>   <span class="o">|</span> <span class="n">websafe</span> 
+<span class="c1">----+-------+---------+---------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">beige</span> <span class="o">|</span> <span class="o">#</span><span class="n">F5F5DC</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">coral</span> <span class="o">|</span> <span class="o">#</span><span class="n">FF7F50</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">cyan</span>  <span class="o">|</span> <span class="o">#</span><span class="mi">00</span><span class="n">FFFF</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">4</span> <span class="o">|</span> <span class="n">gold</span>  <span class="o">|</span> <span class="o">#</span><span class="n">FFD700</span> <span class="o">|</span> <span class="n">t</span>
+<span class="p">(</span><span class="mi">4</span> <span class="k">rows</span><span class="p">)</span>
+
+
+</code></pre></div></div>
+
+<p>When dropping tables that are referenced by other tables, you are likely to get an error.  If another table depends on the table you’re trying to delete, you have to update or delete that table first.</p>
+
+<p>Let’s drop for real:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<p>Ok - let’s recreate it to see what else we can alter:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">color</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">hex</span> <span class="n">text</span> <span class="c1">-- hex color specification used with html</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">color</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">hex</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'beige'</span><span class="p">,</span> <span class="s1">'#F5F5DC'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'coral'</span><span class="p">,</span> <span class="s1">'#FF7F50'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="s1">'#00FFFF'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'gold'</span><span class="p">,</span> <span class="s1">'#FFD700'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Let’s change the name of the hex column</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">color</span> <span class="k">RENAME</span> <span class="n">hex</span> <span class="k">TO</span> <span class="n">webcolor</span><span class="p">;</span>
+<span class="err">\</span><span class="n">d</span> <span class="n">color</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Let’s change the type of the column to <code class="highlighter-rouge">char(7)</code> since hex colors have <code class="highlighter-rouge">#</code> and 6 letters/numbers.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">color</span> <span class="k">ALTER</span> <span class="n">hex</span> <span class="k">TYPE</span> <span class="n">char</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
+<span class="err">\</span><span class="n">d</span> <span class="n">color</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercise-alter">Exercise: Alter<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#exercise-alter" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Create and populate the <code class="highlighter-rouge">food</code> table below using the commands provided.</p>
+
+<p>Insert a few additional rows into the table.</p>
+
+<p>Then add a new text column <code class="highlighter-rouge">color</code>.  Then rename the <code class="highlighter-rouge">color</code> column you just created to <code class="highlighter-rouge">primary_color</code>.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">food</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="k">type</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">favorite</span> <span class="n">boolean</span> <span class="k">default</span> <span class="k">false</span>    
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">food</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'broccoli'</span><span class="p">,</span><span class="s1">'vegetable'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'lime'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'green beans'</span><span class="p">,</span> <span class="s1">'vegetable'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'milk'</span><span class="p">,</span> <span class="s1">'dairy'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'yogurt'</span><span class="p">,</span> <span class="s1">'dairy'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'banana'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'lemon'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'tortilla'</span><span class="p">,</span> <span class="s1">'carbohydrate'</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">'rice'</span><span class="p">,</span> <span class="s1">'carbohydrate'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><a href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">Answers</a></p>
+
+<h1 id="changing-and-deleting-rows-in-a-table">Changing and Deleting Rows in a Table</h1>
+
+<h2 id="update">Update<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#update" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>To change the values in a row, use <code class="highlighter-rouge">UPDATE</code>.</p>
+
+<p>Let’s create a table and add some data to play with:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">workshop</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="n">date</span> <span class="n">date</span><span class="p">,</span>
+    <span class="n">beginner</span> <span class="n">boolean</span> <span class="k">default</span> <span class="k">false</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">workshop</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Intro to Python'</span><span class="p">,</span> <span class="s1">'2017-07-10'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'Python Data Analysis'</span><span class="p">,</span> <span class="s1">'2017-08-03'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'Databases'</span><span class="p">,</span> <span class="s1">'2017-08-17'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'Intro to R'</span><span class="p">,</span> <span class="s1">'2017-09-07'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>This gives us:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">workshop</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span>         <span class="n">name</span>         <span class="o">|</span>    <span class="n">date</span>    <span class="o">|</span> <span class="n">beginner</span> 
+<span class="c1">----+----------------------+------------+----------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">Intro</span> <span class="k">to</span> <span class="n">Python</span>      <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span> <span class="o">|</span> <span class="n">f</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">Python</span> <span class="k">Data</span> <span class="n">Analysis</span> <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="n">f</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">Databases</span>            <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">17</span> <span class="o">|</span> <span class="n">f</span>
+  <span class="mi">4</span> <span class="o">|</span> <span class="n">Intro</span> <span class="k">to</span> <span class="n">R</span>           <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">07</span> <span class="o">|</span> <span class="n">f</span>
+<span class="p">(</span><span class="mi">4</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Now, when we inserted values, we let the <code class="highlighter-rouge">beginner</code> column take the default value of false.  Let’s change that for the second course.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">workshop</span> <span class="k">SET</span> <span class="n">beginner</span><span class="o">=</span><span class="s1">'t'</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The output we get, <code class="highlighter-rouge">UPDATE 1</code>, tells us how many rows were affected by the update.  Whatever rows are selected by the <code class="highlighter-rouge">where</code> clause of the query will be affected – it doesn’t have to be a single row.</p>
+
+<p>Now, let’s change the date.  Say we got the date off by one day for the last two workshops.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">workshop</span> <span class="k">SET</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">workshop</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span>         <span class="n">name</span>         <span class="o">|</span>    <span class="n">date</span>    <span class="o">|</span> <span class="n">beginner</span> 
+<span class="c1">----+----------------------+------------+----------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">Intro</span> <span class="k">to</span> <span class="n">Python</span>      <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span> <span class="o">|</span> <span class="n">f</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">Python</span> <span class="k">Data</span> <span class="n">Analysis</span> <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="n">t</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">Databases</span>            <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">18</span> <span class="o">|</span> <span class="n">f</span>
+  <span class="mi">4</span> <span class="o">|</span> <span class="n">Intro</span> <span class="k">to</span> <span class="n">R</span>           <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">08</span> <span class="o">|</span> <span class="n">f</span>
+<span class="p">(</span><span class="mi">4</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>You can update multiple columns with the same statement.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">workshop</span> 
+<span class="k">SET</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Introduction to R'</span><span class="p">,</span> <span class="n">beginner</span><span class="o">=</span><span class="s1">'t'</span>
+<span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercise-update">Exercise: Update<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#exercise-update" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Using the food table created and altered above, set the values of the <code class="highlighter-rouge">primary_color</code> column (try to set the value for a few rows together with one query).  Then set the values of the <code class="highlighter-rouge">favorite</code> column based on your favorites.</p>
+
+<p><a href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">Answers</a></p>
+
+<h2 id="update-with-join">Update with Join<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#update-with-join" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p><a href="http://www.postgresqltutorial.com/postgresql-update-join/">Updating via a join</a> (or <a href="https://www.postgresql.org/docs/9.6/static/sql-update.html">official documentation</a>)</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">product_segment</span> <span class="p">(</span>
+    <span class="n">ID</span> <span class="n">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">segment</span> <span class="n">VARCHAR</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">discount</span> <span class="n">NUMERIC</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">);</span>
+ 
+ 
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">product_segment</span> <span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">discount</span><span class="p">)</span>
+<span class="k">VALUES</span>
+    <span class="p">(</span><span class="s1">'Grand Luxury'</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">05</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'Luxury'</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">06</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'Mass'</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">);</span>
+    
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">product</span><span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">varchar</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="n">price</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">net_price</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">segment_id</span> <span class="n">int</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="k">foreign</span> <span class="k">key</span><span class="p">(</span><span class="n">segment_id</span><span class="p">)</span> <span class="k">references</span> <span class="n">product_segment</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+ 
+ 
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">product</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">price</span><span class="p">,</span> <span class="n">segment_id</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'diam'</span><span class="p">,</span> <span class="mi">804</span><span class="p">.</span><span class="mi">89</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'vestibulum aliquet'</span><span class="p">,</span> <span class="mi">228</span><span class="p">.</span><span class="mi">55</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'lacinia erat'</span><span class="p">,</span> <span class="mi">366</span><span class="p">.</span><span class="mi">45</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'scelerisque quam turpis'</span><span class="p">,</span> <span class="mi">145</span><span class="p">.</span><span class="mi">33</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'justo lacinia'</span><span class="p">,</span> <span class="mi">551</span><span class="p">.</span><span class="mi">77</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'ultrices mattis odio'</span><span class="p">,</span> <span class="mi">261</span><span class="p">.</span><span class="mi">58</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'hendrerit'</span><span class="p">,</span> <span class="mi">519</span><span class="p">.</span><span class="mi">62</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'in hac habitasse'</span><span class="p">,</span> <span class="mi">843</span><span class="p">.</span><span class="mi">31</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'orci eget orci'</span><span class="p">,</span> <span class="mi">254</span><span class="p">.</span><span class="mi">18</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'pellentesque'</span><span class="p">,</span> <span class="mi">427</span><span class="p">.</span><span class="mi">78</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'sit amet nunc'</span><span class="p">,</span> <span class="mi">936</span><span class="p">.</span><span class="mi">29</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'sed vestibulum'</span><span class="p">,</span> <span class="mi">910</span><span class="p">.</span><span class="mi">34</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'turpis eget'</span><span class="p">,</span> <span class="mi">208</span><span class="p">.</span><span class="mi">33</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'cursus vestibulum'</span><span class="p">,</span> <span class="mi">985</span><span class="p">.</span><span class="mi">45</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'orci nullam'</span><span class="p">,</span> <span class="mi">841</span><span class="p">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'est quam pharetra'</span><span class="p">,</span> <span class="mi">896</span><span class="p">.</span><span class="mi">38</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'posuere'</span><span class="p">,</span> <span class="mi">575</span><span class="p">.</span><span class="mi">74</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'ligula'</span><span class="p">,</span> <span class="mi">530</span><span class="p">.</span><span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'convallis'</span><span class="p">,</span> <span class="mi">892</span><span class="p">.</span><span class="mi">43</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">'nulla elit ac'</span><span class="p">,</span> <span class="mi">161</span><span class="p">.</span><span class="mi">71</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Now, we want to update the prices in the product table using information about the discounts from the <code class="highlighter-rouge">product_segment</code> table.</p>
+
+<p>First, how do we join these tables?</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> 
+<span class="k">FROM</span> <span class="n">product</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">product_segment</span>
+<span class="k">ON</span> <span class="n">product</span><span class="p">.</span><span class="n">segment_id</span><span class="o">=</span><span class="n">product_segment</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>We want to update the net_price.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">product</span>
+<span class="k">SET</span> <span class="n">net_price</span> <span class="o">=</span> <span class="n">price</span> <span class="o">-</span> <span class="n">price</span> <span class="o">*</span> <span class="n">discount</span>
+<span class="k">FROM</span>
+<span class="n">product_segment</span>
+<span class="k">WHERE</span>
+<span class="n">product</span><span class="p">.</span><span class="n">segment_id</span> <span class="o">=</span> <span class="n">product_segment</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercise">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#exercise" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Create and populate tables using the supplied code below.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">course</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">int</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="n">last_taught</span> <span class="n">date</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">course</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> 
+<span class="k">VALUES</span> 
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Chemistry'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Physics'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'History'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'English'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">'French'</span><span class="p">);</span>
+    
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">course_offering</span> <span class="p">(</span>
+    <span class="n">course_id</span> <span class="n">int</span> <span class="k">references</span> <span class="n">course</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">quarter_name</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">date</span> <span class="n">date</span><span class="p">,</span>
+    <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">course_id</span><span class="p">,</span> <span class="n">quarter_name</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">course_offering</span> 
+<span class="k">VALUES</span> 
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Spring 2015'</span><span class="p">,</span> <span class="s1">'2015-03-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Spring 2017'</span><span class="p">,</span> <span class="s1">'2017-03-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Fall 2016'</span><span class="p">,</span> <span class="s1">'2016-09-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Spring 2017'</span><span class="p">,</span> <span class="s1">'2017-03-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'Spring 2016'</span><span class="p">,</span> <span class="s1">'2016-03-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2015'</span><span class="p">,</span> <span class="s1">'2015-01-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2017'</span><span class="p">,</span> <span class="s1">'2017-01-01'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2016'</span><span class="p">,</span> <span class="s1">'2016-01-01'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Set the value of <code class="highlighter-rouge">last_taught</code> in <code class="highlighter-rouge">course</code> to the most recent date the course was taught using the <code class="highlighter-rouge">course_offering</code> table.</p>
+
+<p>Hint: you’ll need to join to a subquery (the results of another query).  Think first about how to get the most recent date for each course, and then how to use that information in the update.  Alternatively, create a temporary table with the results of the query, then write an update statement using the temporary table.</p>
+
+<p><a href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">Answers</a></p>
+
+<h2 id="delete">Delete<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#delete" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>We can also delete rows.  If you neglect to add a where clause or mis-specify it, you can delete everything in your table.  So remember to use transactions.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">workshop</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">4</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note that if you try to delete rows that are referenced in other tables via foreign keys, you’ll get an error. You’ll need to update or delete references first, or manage these relationships automatically with something called <a href="https://www.postgresql.org/docs/current/static/ddl-constraints.html#DDL-CONSTRAINTS-FK">cascades</a>.</p>
+
+<p>You can also delete using another table as we did with update, but the syntax is different:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">product</span>
+<span class="k">USING</span> <span class="n">product_segment</span> 
+<span class="k">WHERE</span> <span class="n">product</span><span class="p">.</span><span class="n">segment_id</span><span class="o">=</span><span class="n">product_segment</span><span class="p">.</span><span class="n">id</span>
+<span class="k">AND</span> <span class="n">discount</span> <span class="o">&lt;</span> <span class="p">.</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Or we could rewrite this with a subquery:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">product</span>
+<span class="k">WHERE</span> <span class="n">segment_id</span> <span class="k">IN</span> 
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">segment_id</span> 
+ <span class="k">FROM</span> <span class="n">product_segment</span>
+ <span class="k">WHERE</span> <span class="n">discount</span> <span class="o">&lt;</span> <span class="p">.</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="exercise-delete">Exercise: Delete<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4.html#exercise-delete" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Using the <code class="highlighter-rouge">food</code> table created, altered, and updated above, delete any white foods that aren’t a favorite.</p>
+
+<p>Using the <code class="highlighter-rouge">course</code> table created above, first alter the table to remove the last_taught column.  Then delete any courses that were last offered before 2017 (start date before 2017).  Note that you’ll also need to delete entries from course_offering table too.  Be careful not to delete old offerings of courses you aren’t deleting.</p>
+
+<p><a href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">Answers</a></p>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part4.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 4 _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

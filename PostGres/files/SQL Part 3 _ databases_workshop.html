@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://nuitrcs.github.io/databases_workshop/sql/part3.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 3 | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 3">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part3.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part3.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part3.html","headline":"SQL Part 3","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 3 _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-3">SQL Part 3</h1>
+
+<p>Creating tables, importing and exporting data</p>
+
+<p>This part requires you to connect to a database where you have permissions to create new tables.</p>
+
+<h1 id="create-table"><code class="highlighter-rouge">CREATE TABLE</code></h1>
+
+<p>The basic syntax of creating a table is:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">table_name</span> <span class="p">(</span>
+   <span class="k">column_name</span> <span class="k">TYPE</span> <span class="n">COLUMN_CONSTRAINT</span><span class="p">,</span>
+   <span class="k">column_name</span> <span class="k">TYPE</span> <span class="n">COLUMN_CONSTRAINT</span><span class="p">,</span>
+   <span class="k">column_name</span> <span class="k">TYPE</span> <span class="n">COLUMN_CONSTRAINT</span><span class="p">,</span>
+   <span class="k">CONSTRAINT</span> <span class="n">table_constraint</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Constraints are conditions on one or more columns that link tables together and control what values a column can take.</p>
+
+<p>Let’s start with a concrete example.  We’ll make a table for students.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">student</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="n">serial</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">first_name</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">last_name</span> <span class="n">text</span><span class="p">,</span>
+    <span class="n">admission_year</span> <span class="n">smallint</span> 
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>A common style convention is to name tables with the singular form of a noun, not plural.  Tables and columns are named in all lowercase, with underscores as necessary to separate words.  People differ on whether <code class="highlighter-rouge">id</code> columns should just be <code class="highlighter-rouge">id</code> or <code class="highlighter-rouge">tablename_id</code> (so in this case, <code class="highlighter-rouge">student_id</code> vs. <code class="highlighter-rouge">id</code>).</p>
+
+<p>Breaking this down piece by piece:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">serial</code> is an integer that autoincrements.  It’s a good choice when you want an ID column generated for you.</li>
+  <li><code class="highlighter-rouge">PRIMARY KEY</code> means that the column in <code class="highlighter-rouge">NOT NULL</code> and <code class="highlighter-rouge">UNIQUE</code> – so each row has a unique value on this column.  PostgreSQL will generate a name for this primary key constraint for you (you don’t really need the name for most things you’ll do).  An index will also be created from this column, which makes looking up rows in the table with values of this column more efficient.</li>
+  <li><code class="highlighter-rouge">first_name</code> and <code class="highlighter-rouge">last_name</code> are type text.  Text isn’t a standard SQL type, so if you’ll be working across different systems, you might use <code class="highlighter-rouge">varchar</code> or <code class="highlighter-rouge">char</code> instead.  With these, you’d specify the number of characters, but with text you don’t.</li>
+  <li><code class="highlighter-rouge">admission_year</code> is a <code class="highlighter-rouge">smallint</code> which takes the range -32768 to 32767 (2 bits).  This range is sufficient for a year.  There are also <code class="highlighter-rouge">int</code> and <code class="highlighter-rouge">float</code> among some others.</li>
+</ul>
+
+<p><a href="https://www.postgresql.org/docs/current/static/datatype.html">PostgreSQL Types</a></p>
+
+<p>Every table should have a primary key, although this isn’t enforced in PostgreSQL.  You can use a combination of columns as the primary key instead of just defining it on one of them.</p>
+
+<p>What does the describe command tell us about our new table:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="err">\</span><span class="n">d</span> <span class="n">student</span>
+                              <span class="k">Table</span> <span class="nv">"public.student"</span>
+     <span class="k">Column</span>     <span class="o">|</span>   <span class="k">Type</span>   <span class="o">|</span>                      <span class="n">Modifiers</span>                       
+<span class="c1">----------------+----------+------------------------------------------------------</span>
+ <span class="n">id</span>             <span class="o">|</span> <span class="n">integer</span>  <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="n">nextval</span><span class="p">(</span><span class="s1">'student_id_seq'</span><span class="p">::</span><span class="n">regclass</span><span class="p">)</span>
+ <span class="n">first_name</span>     <span class="o">|</span> <span class="n">text</span>     <span class="o">|</span> 
+ <span class="n">last_name</span>      <span class="o">|</span> <span class="n">text</span>     <span class="o">|</span> 
+ <span class="n">admission_year</span> <span class="o">|</span> <span class="n">smallint</span> <span class="o">|</span> 
+<span class="n">Indexes</span><span class="p">:</span>
+    <span class="nv">"student_pkey"</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">btree</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>You can see the primary key index that was made, and the student id sequence.</p>
+
+<p>Note that unless you’re a superuser, others may not have permissions to your table.  Managing users and permissions is outside the scope of this workshop.</p>
+
+<h2 id="adding-values">Adding Values<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part3.html#adding-values" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<h3 id="insert">Insert<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part3.html#insert" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>How do we add data to this table?  We can issue insert commands:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">student</span> <span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">admission_year</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'Walker'</span><span class="p">,</span> <span class="mi">2017</span><span class="p">),</span>
+       <span class="p">(</span><span class="s1">'Bob'</span><span class="p">,</span> <span class="s1">'Williams'</span><span class="p">,</span> <span class="mi">2016</span><span class="p">),</span>
+       <span class="p">(</span><span class="s1">'Charlie'</span><span class="p">,</span> <span class="s1">'Weston'</span><span class="p">,</span> <span class="mi">2016</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Each row goes in <code class="highlighter-rouge">()</code>, with each set of values separated by commas.</p>
+
+<p>Let’s check:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">student</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">practice</span><span class="o">=#</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">student</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span> <span class="n">first_name</span> <span class="o">|</span> <span class="n">last_name</span> <span class="o">|</span> <span class="n">admission_year</span> 
+<span class="c1">----+------------+-----------+----------------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">Alice</span>      <span class="o">|</span> <span class="n">Walker</span>    <span class="o">|</span>           <span class="mi">2017</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">Bob</span>        <span class="o">|</span> <span class="n">Williams</span>  <span class="o">|</span>           <span class="mi">2016</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">Charlie</span>    <span class="o">|</span> <span class="n">Weston</span>    <span class="o">|</span>           <span class="mi">2016</span>
+<span class="p">(</span><span class="mi">3</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The id column was generated for us, starting at 1.</p>
+
+<p>Specifying the columns by name in the insert statement is optional.  We’re doing it here because we’re not inserting into every column - just 3 - and letting the ID be assigned automatically.  Specifying the columns by name also allows us specify what the order is.</p>
+
+<p>An alternative to above without specifying the column names:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">student</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="k">DEFAULT</span><span class="p">,</span> <span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'Walker'</span><span class="p">,</span> <span class="mi">2017</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">DEFAULT</span><span class="p">,</span> <span class="s1">'Bob'</span><span class="p">,</span> <span class="s1">'Williams'</span><span class="p">,</span> <span class="mi">2016</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">DEFAULT</span><span class="p">,</span> <span class="s1">'Charlie'</span><span class="p">,</span> <span class="s1">'Weston'</span><span class="p">,</span> <span class="mi">2016</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">student</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>It inserted them in again!  That’s because there wasn’t anything in the table definition precluding duplicates on names.  We’ll learn how to delete rows later.</p>
+
+<p>But, this demonstrates one reason you want a primary key – without an ID column here, it would be very difficult to delete only one of each of the duplicates.</p>
+
+<h3 id="copy"><code class="highlighter-rouge">copy</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part3.html#copy" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>We can also <a href="https://www.postgresql.org/docs/current/static/sql-copy.html">copy</a> data from a file.  The PostgreSQL copy command works in reference to the file system on the database server.  So if you aren’t running the server on your local machine, you can’t use copy.  With the <code class="highlighter-rouge">psql</code> client, the <code class="highlighter-rouge">\copy</code> command, which uses the same syntax as <code class="highlighter-rouge">copy</code>, will transfer files between your local computer and the database server.</p>
+
+<p>Get the CSV file from: https://raw.githubusercontent.com/nuitrcs/databases_workshop/master/datafiles/studentdata.csv and save it somewhere you know the path to.  You can get it by opening another connection to the server and using</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://raw.githubusercontent.com/nuitrcs/databases_workshop/master/datafiles/studentdata.csv &gt; studentdata.csv
+</code></pre></div></div>
+
+<p>In in-person workshops where we’re using a remote server for <code class="highlighter-rouge">psql</code>, the file needs to be on that server. The file is in /tmp/studentdata.csv</p>
+
+<p>Note that <code class="highlighter-rouge">\</code> commands like <code class="highlighter-rouge">\copy</code> in <code class="highlighter-rouge">psql</code> need to be all on one line without comments or line breaks in them.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="k">copy</span> <span class="n">student</span> <span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">admission_year</span><span class="p">)</span> <span class="k">FROM</span> <span class="s1">'/tmp/studentdata.csv'</span> <span class="n">CSV</span> <span class="n">HEADER</span>
+</code></pre></div></div>
+
+<p>Change the path as appropriate above to the data file on your system.</p>
+
+<p>Client programs have their own data import functions.  <code class="highlighter-rouge">\copy</code> is specific to the <code class="highlighter-rouge">psql</code> command line program.</p>
+
+<h2 id="temporary-tables">Temporary Tables<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part3.html#temporary-tables" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>You can create tables from result sets as well:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">a_actors</span> <span class="k">AS</span> 
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">WHERE</span> <span class="n">actor</span><span class="p">.</span><span class="n">first_name</span> <span class="k">LIKE</span> <span class="s1">'A%'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">a_actors</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>When creating a table, you also have the option to make the table temporary – it will be deleted when your database session ends.  This is often useful with tables created from select statements, but it can be used with any table creation command.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TEMP</span> <span class="k">TABLE</span> <span class="n">b_actors</span> <span class="k">AS</span> 
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span> 
+<span class="k">WHERE</span> <span class="n">actor</span><span class="p">.</span><span class="n">first_name</span> <span class="k">LIKE</span> <span class="s1">'B%'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">b_actors</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Temporary tables can be useful for creating intermediate tables (to help simplify or speed up complex queries) or result sets you may want to export or use later.</p>
+
+<p>Temporary tables are automatically deleted when your session ends.  Often users will have permissions to create temporary tables, but not permanent tables.  You become the owner of the table, and others will not have permission to view temporary tables by default:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="n">dt</span>
+</code></pre></div></div>
+
+<p>Creating tables in this way copies all of the data.  The new table is independent from the table or tables it was created from.</p>
+
+<h1 id="views">Views</h1>
+
+<p>Instead of creating a new table (permanent or temporary), you can instead create a view (either permanent or temporary) that is essentially a saved query that you can reference as a table.  You can query the view like a table, but the data isn’t copied – it pulls the results from the original tables.  So if the original tables are updated, the results of the view will change.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TEMP</span> <span class="k">VIEW</span> <span class="n">actor_film_names</span> <span class="k">AS</span> 
+<span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span>
+<span class="k">FROM</span> <span class="n">actor</span> <span class="n">a</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">film_actor</span> <span class="n">fa</span>
+<span class="k">ON</span> <span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="o">=</span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">film</span> <span class="n">f</span>
+<span class="k">ON</span> <span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="o">=</span><span class="n">fa</span><span class="p">.</span><span class="n">film_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor_film_names</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h1 id="exporting-data">Exporting Data</h1>
+
+<p>You can use <a href="https://www.postgresql.org/docs/current/static/sql-copy.html">Copy</a> (or <code class="highlighter-rouge">\copy</code>) to export data too.  You have to specify an absolute file path when writing an output file.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="k">copy</span> <span class="n">student</span> <span class="k">TO</span> <span class="s1">'/Users/username/documents/mystudents.csv'</span> <span class="n">CSV</span> <span class="n">HEADER</span>
+</code></pre></div></div>
+
+<p>You can copy tables by name or enter a query in () in that place instead.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="k">copy</span> <span class="p">(</span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">student</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">)</span> <span class="k">TO</span> <span class="s1">'/Users/username/documents/mystudents5.csv'</span> <span class="n">CSV</span> <span class="n">HEADER</span>
+</code></pre></div></div>
+
+<p>In <code class="highlighter-rouge">psql</code> there is also a <code class="highlighter-rouge">\o</code> command to open a file for writing (and then close it later):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\o out.txt
+SELECT * FROM actor;
+\o
+</code></pre></div></div>
+
+<p>This just prints the output as it would be in the terminal to the file.</p>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part3.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 3 _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

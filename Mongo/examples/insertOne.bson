@@ -1,0 +1,1 @@
+db.socks.insertOne( { sockOwner: "Steve", size: 9, color: "Blue", pattern: "Polkadot", material: "Cotton", condition: "Good", forFoot: "Left" } )

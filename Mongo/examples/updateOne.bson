@@ -1,0 +1,1 @@
+db.socks.updateOne( { sockOwner: "Steve" }, { $set: { 'size': 8 } } )

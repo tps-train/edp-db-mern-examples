@@ -1,0 +1,6 @@
+db.socks.insertMany( [
+                { sockOwner: "Christine", size: 5, color: "Rose/White", pattern: "Stiped", material: "Wool", condition: "Excellent", forFoot: "Both" },
+                { sockOwner: "Rap", size: 10, color: "Navy Blue", pattern: "None", material: "Syntetic", condition: "Good", forFoot: "Right" } 
+                { sockOwner: "Ola", size: 8, color: "Black", pattern: "Pin-stipe", material: "Wool", condition: "Good", forFoot: "Left" } 
+                { sockOwner: "Fox", size: 9, color: "Black/White", pattern: "Checked", material: "Wool", condition: "Good", forFoot: "Both" } 
+              ] )

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 4: Exercises | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 4: Exercises">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html","headline":"SQL Part 4: Exercises","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 4_ Exercises_Answers _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-4-exercises">SQL Part 4: Exercises</h1>
+<hr>
+
+<p>There may be other ways to achieve the same result.  Remember that SQL commands are not case sensitive (but data values are).</p>
+
+<h2 id="exercise-alter">Exercise: Alter<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#exercise-alter" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Create and populate the <code class="highlighter-rouge">food</code> table below using the commands provided.</p>
+
+<p>Then add a new text column <code class="highlighter-rouge">color</code>.</p>
+
+<p>Read how to alter a table by <a href="http://www.postgresqltutorial.com/postgresql-rename-column/">changing a column name</a> (or <a href="https://www.postgresql.org/docs/current/static/sql-altertable.html">official documentation</a>).  Then rename the <code class="highlighter-rouge">color</code> column you just created to <code class="highlighter-rouge">primary_color</code>.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">food</span> <span class="p">(</span>
+	<span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+	<span class="n">name</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+	<span class="k">type</span> <span class="n">text</span><span class="p">,</span>
+	<span class="n">favorite</span> <span class="n">boolean</span> <span class="k">default</span> <span class="k">false</span>	
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">food</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">)</span> 
+<span class="k">VALUES</span> 
+	<span class="p">(</span><span class="s1">'broccoli'</span><span class="p">,</span><span class="s1">'vegetable'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'lime'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'green beans'</span><span class="p">,</span> <span class="s1">'vegetable'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'milk'</span><span class="p">,</span> <span class="s1">'dairy'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'yogurt'</span><span class="p">,</span> <span class="s1">'dairy'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'banana'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'lemon'</span><span class="p">,</span> <span class="s1">'fruit'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'tortilla'</span><span class="p">,</span> <span class="s1">'carbohydrate'</span><span class="p">),</span> 
+	<span class="p">(</span><span class="s1">'rice'</span><span class="p">,</span> <span class="s1">'carbohydrate'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h4 id="solution">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#solution" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">food</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">color</span> <span class="n">text</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">food</span> <span class="k">RENAME</span> <span class="n">color</span> <span class="k">TO</span> <span class="n">primary_color</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-update">Exercise: Update<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#exercise-update" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Using the food table created and altered above, set the values of the <code class="highlighter-rouge">primary_color</code> column.  Then set the values of the <code class="highlighter-rouge">favorite</code> column based on your favorites.</p>
+
+<h4 id="solution-1">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#solution-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<p>Assuming that your table is starting looking like</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">food</span><span class="p">;</span>
+ <span class="n">id</span> <span class="o">|</span>    <span class="n">name</span>     <span class="o">|</span>     <span class="k">type</span>     <span class="o">|</span> <span class="n">favorite</span> <span class="o">|</span> <span class="n">primary_color</span> 
+<span class="c1">----+-------------+--------------+----------+---------------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="n">broccoli</span>    <span class="o">|</span> <span class="n">vegetable</span>    <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">2</span> <span class="o">|</span> <span class="n">lime</span>        <span class="o">|</span> <span class="n">fruit</span>        <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">3</span> <span class="o">|</span> <span class="n">green</span> <span class="n">beans</span> <span class="o">|</span> <span class="n">vegetable</span>    <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">4</span> <span class="o">|</span> <span class="n">milk</span>        <span class="o">|</span> <span class="n">dairy</span>        <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">5</span> <span class="o">|</span> <span class="n">yogurt</span>      <span class="o">|</span> <span class="n">dairy</span>        <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">6</span> <span class="o">|</span> <span class="n">banana</span>      <span class="o">|</span> <span class="n">fruit</span>        <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">7</span> <span class="o">|</span> <span class="n">lemon</span>       <span class="o">|</span> <span class="n">fruit</span>        <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">8</span> <span class="o">|</span> <span class="n">tortilla</span>    <span class="o">|</span> <span class="n">carbohydrate</span> <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+  <span class="mi">9</span> <span class="o">|</span> <span class="n">rice</span>        <span class="o">|</span> <span class="n">carbohydrate</span> <span class="o">|</span> <span class="n">f</span>        <span class="o">|</span> 
+<span class="p">(</span><span class="mi">9</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Then, a few different ways you could do updates:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">food</span> <span class="k">SET</span> <span class="n">primary_color</span><span class="o">=</span><span class="s1">'green'</span> 
+<span class="k">WHERE</span> <span class="n">name</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'broccoli'</span><span class="p">,</span> <span class="s1">'lime'</span><span class="p">,</span> <span class="s1">'green beans'</span><span class="p">);</span>
+
+<span class="c1">-- or </span>
+<span class="k">UPDATE</span> <span class="n">food</span> <span class="k">SET</span> <span class="n">primary_color</span><span class="o">=</span><span class="s1">'green'</span> 
+<span class="k">WHERE</span> <span class="n">id</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">food</span> <span class="k">SET</span> <span class="n">primary_color</span><span class="o">=</span><span class="s1">'white'</span> 
+<span class="k">WHERE</span> <span class="n">id</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+
+<span class="c1">-- next statement dependent on the ones above having been run</span>
+<span class="k">UPDATE</span> <span class="n">food</span> <span class="k">SET</span> <span class="n">primary_color</span><span class="o">=</span><span class="s1">'yellow'</span> 
+<span class="k">WHERE</span> <span class="n">primary_color</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="k">type</span><span class="o">=</span><span class="s1">'fruit'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">food</span> <span class="k">SET</span> <span class="n">favorite</span><span class="o">=</span><span class="s1">'t'</span> 
+<span class="k">WHERE</span> <span class="n">id</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="exercise-update-with-join">Exercise: Update with Join<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#exercise-update-with-join" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Create and populate tables using the supplied code below.</p>
+
+<p>Set the value of <code class="highlighter-rouge">last_taught</code> in <code class="highlighter-rouge">course</code> to the most recent date the course was taught using the <code class="highlighter-rouge">course_offering</code> table.</p>
+
+<p>Hint: you’ll need to join to a subquery (the results of another query).  Think first about how to get the most recent date for each course, and then how to use that information in the update.  Alternatively, create a temporary table with the results of the query, then write an update statement using the temporary table.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">course</span> <span class="p">(</span>
+	<span class="n">id</span> <span class="n">int</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+	<span class="n">name</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+	<span class="n">last_taught</span> <span class="n">date</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">course</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Chemistry'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Physics'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'History'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'English'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">'French'</span><span class="p">);</span>
+	
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">course_offering</span> <span class="p">(</span>
+	<span class="n">course_id</span> <span class="n">int</span> <span class="k">references</span> <span class="n">course</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+	<span class="n">quarter_name</span> <span class="n">text</span><span class="p">,</span>
+	<span class="n">date</span> <span class="n">date</span><span class="p">,</span>
+	<span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">course_id</span><span class="p">,</span> <span class="n">quarter_name</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">course_offering</span> 
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Spring 2015'</span><span class="p">,</span> <span class="s1">'2015-03-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'Spring 2017'</span><span class="p">,</span> <span class="s1">'2017-03-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Fall 2016'</span><span class="p">,</span> <span class="s1">'2016-09-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'Spring 2017'</span><span class="p">,</span> <span class="s1">'2017-03-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'Spring 2016'</span><span class="p">,</span> <span class="s1">'2016-03-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2015'</span><span class="p">,</span> <span class="s1">'2015-01-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2017'</span><span class="p">,</span> <span class="s1">'2017-01-01'</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'Winter 2016'</span><span class="p">,</span> <span class="s1">'2016-01-01'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h4 id="solution-2">Solution<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#solution-2" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">course</span> 
+<span class="k">SET</span> <span class="n">last_taught</span> <span class="o">=</span> <span class="n">maxdate</span> 
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">course_id</span><span class="p">,</span> <span class="k">max</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="k">AS</span> <span class="n">maxdate</span> 
+		<span class="k">FROM</span> <span class="n">course_offering</span>
+		<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">course_id</span><span class="p">)</span> <span class="n">foo</span>
+<span class="k">WHERE</span> 
+	<span class="n">id</span><span class="o">=</span><span class="n">course_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise-delete">Exercise: Delete<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#exercise-delete" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Using the table created, altered, and updated above, delete any white foods that aren’t a favorite.</p>
+
+<p>Using the <code class="highlighter-rouge">course</code> table created above, delete any courses that were last offered before 2017 (start date before 2017).  Note that you’ll also need to delete entries from course_offering table too.  Be careful not to delete old offerings of courses you aren’t deleting.</p>
+
+<h4 id="solutions">Solutions<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part4_exercises_with_answers.html#solutions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">food</span> 
+<span class="k">WHERE</span> <span class="n">primary_color</span><span class="o">=</span><span class="s1">'white'</span> 
+<span class="k">AND</span> <span class="k">NOT</span> <span class="n">favorite</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>One option (you could also do this with USING):</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">course</span>
+<span class="k">DROP</span> <span class="n">last_taught</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">course_offering</span>
+<span class="k">WHERE</span> <span class="n">course_id</span> <span class="k">NOT</span> <span class="k">IN</span> 
+ <span class="p">(</span><span class="k">SELECT</span> <span class="n">course_id</span> 
+  <span class="k">FROM</span> <span class="n">course_offering</span>
+  <span class="k">WHERE</span> <span class="n">date</span> <span class="o">&gt;=</span> <span class="s1">'2017-01-01'</span><span class="p">);</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">course</span>
+<span class="k">WHERE</span> <span class="n">id</span> <span class="k">NOT</span> <span class="k">IN</span>
+ <span class="p">(</span><span class="k">SELECT</span> <span class="n">course_id</span> 
+  <span class="k">FROM</span> <span class="n">course_offering</span><span class="p">);</span>
+</code></pre></div></div>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part4_exercises_with_answers.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 4_ Exercises_Answers _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>

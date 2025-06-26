@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://nuitrcs.github.io/databases_workshop/sql/part1.html -->
+<html lang="en-US" data-google-analytics-opt-out=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SQL Part 1 | databases_workshop</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="SQL Part 1">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="RCS Intro to Databases workshop materials">
+<meta property="og:description" content="RCS Intro to Databases workshop materials">
+<link rel="canonical" href="https://nuitrcs.github.io/databases_workshop/sql/part1.html">
+<meta property="og:url" content="https://nuitrcs.github.io/databases_workshop/sql/part1.html">
+<meta property="og:site_name" content="databases_workshop">
+<script type="application/ld+json">
+{"@type":"WebPage","url":"https://nuitrcs.github.io/databases_workshop/sql/part1.html","headline":"SQL Part 1","description":"RCS Intro to Databases workshop materials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./SQL Part 1 _ databases_workshop_files/style.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nuitrcs.github.io/databases_workshop/">databases_workshop</a></h1>
+      
+
+      <h1 id="sql-part-1">SQL Part 1</h1>
+
+<ul>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#connecting">Connecting</a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#select">Select basics</a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#limit"><code class="highlighter-rouge">LIMIT</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#offset"><code class="highlighter-rouge">OFFSET</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#where"><code class="highlighter-rouge">WHERE</code></a>
+    <ul>
+      <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#between"><code class="highlighter-rouge">BETWEEN</code></a></li>
+      <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#in"><code class="highlighter-rouge">IN</code></a></li>
+      <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#like"><code class="highlighter-rouge">LIKE</code></a></li>
+      <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#is-null"><code class="highlighter-rouge">IS NULL</code></a></li>
+    </ul>
+  </li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#order-by"><code class="highlighter-rouge">ORDER BY</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#distinct"><code class="highlighter-rouge">DISTINCT</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#functions-and-arithmetic">Functions and Arithmetic</a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#group-by"><code class="highlighter-rouge">GROUP BY</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#having"><code class="highlighter-rouge">HAVING</code></a></li>
+  <li><a href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#dates">Dates</a></li>
+</ul>
+
+<h2 id="connecting">Connecting<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#connecting" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>To connect to a database, you need the following information:</p>
+
+<ul>
+  <li>Host/server name:</li>
+  <li>Database name: dvdrental</li>
+  <li>Username:</li>
+  <li>Password:</li>
+  <li>Port: 5432 (default for PostgreSQL)</li>
+</ul>
+
+<p>You also need a client program to connect to the database.  Output below is from a command line client called <code class="highlighter-rouge">psql</code>.</p>
+
+<p>In the introductory workshop, you only have permission to read data from the dvdrental database, not add, update, or delete data, or modify the database.</p>
+
+<h1 id="database-schema">Database Schema</h1>
+
+<p>We’re working with the <code class="highlighter-rouge">dvdrental</code> database from this <a href="http://www.postgresqltutorial.com/">PostgreSQL Tutorial</a>.</p>
+
+<p>The schema (the set of tables, their columns and types, and the relationships between them) is diagramed here: http://www.postgresqltutorial.com/postgresql-sample-database.</p>
+
+<p>We can also get information directly from the database itself.  These commands are specific to each database system.  The commands below are for PostgreSQL.</p>
+
+<h2 id="psql-describe-commands"><code class="highlighter-rouge">psql</code> describe commands<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#psql-describe-commands" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>With <code class="highlighter-rouge">psql</code>, you can use <code class="highlighter-rouge">\d</code> to get a list of relations (tables, views, sequences).</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="n">dvdrental</span><span class="o">=#</span> <span class="err">\</span><span class="n">d</span>
+                     <span class="n">List</span> <span class="k">of</span> <span class="n">relations</span>
+ <span class="k">Schema</span> <span class="o">|</span>            <span class="n">Name</span>            <span class="o">|</span>   <span class="k">Type</span>   <span class="o">|</span>  <span class="k">Owner</span>   
+<span class="c1">--------+----------------------------+----------+----------</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">actor</span>                      <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">actor_actor_id_seq</span>         <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">actor_info</span>                 <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">address</span>                    <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">address_address_id_seq</span>     <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">category</span>                   <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">category_category_id_seq</span>   <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">city</span>                       <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">city_city_id_seq</span>           <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">country</span>                    <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">country_country_id_seq</span>     <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">customer</span>                   <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">customer_customer_id_seq</span>   <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">customer_list</span>              <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film</span>                       <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_actor</span>                 <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_category</span>              <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_film_id_seq</span>           <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_list</span>                  <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">inventory</span>                  <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">inventory_inventory_id_seq</span> <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="k">language</span>                   <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">language_language_id_seq</span>   <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">nicer_but_slower_film_list</span> <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">payment</span>                    <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">payment_payment_id_seq</span>     <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">rental</span>                     <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">rental_rental_id_seq</span>       <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">sales_by_film_category</span>     <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">sales_by_store</span>             <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">staff</span>                      <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">staff_list</span>                 <span class="o">|</span> <span class="k">view</span>     <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">staff_staff_id_seq</span>         <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">store</span>                      <span class="o">|</span> <span class="k">table</span>    <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">store_store_id_seq</span>         <span class="o">|</span> <span class="n">sequence</span> <span class="o">|</span> <span class="n">postgres</span>
+<span class="p">(</span><span class="mi">35</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Or use <code class="highlighter-rouge">\dt</code> to get a list of just tables:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dvdrental</span><span class="o">=#</span> <span class="err">\</span><span class="n">dt</span>
+             <span class="n">List</span> <span class="k">of</span> <span class="n">relations</span>
+ <span class="k">Schema</span> <span class="o">|</span>     <span class="n">Name</span>      <span class="o">|</span> <span class="k">Type</span>  <span class="o">|</span>  <span class="k">Owner</span>   
+<span class="c1">--------+---------------+-------+----------</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">actor</span>         <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">address</span>       <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">category</span>      <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">city</span>          <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">country</span>       <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">customer</span>      <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film</span>          <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_actor</span>    <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">film_category</span> <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">inventory</span>     <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="k">language</span>      <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">payment</span>       <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">rental</span>        <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">staff</span>         <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+ <span class="k">public</span> <span class="o">|</span> <span class="n">store</span>         <span class="o">|</span> <span class="k">table</span> <span class="o">|</span> <span class="n">postgres</span>
+<span class="p">(</span><span class="mi">15</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>To get information for an individual table, use</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\d tablename
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dvdrental</span><span class="o">=#</span> <span class="err">\</span><span class="n">d</span> <span class="n">actor</span>
+                                         <span class="k">Table</span> <span class="nv">"public.actor"</span>
+   <span class="k">Column</span>    <span class="o">|</span>            <span class="k">Type</span>             <span class="o">|</span>                        <span class="n">Modifiers</span>                         
+<span class="c1">-------------+-----------------------------+----------------------------------------------------------</span>
+ <span class="n">actor_id</span>    <span class="o">|</span> <span class="n">integer</span>                     <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="n">nextval</span><span class="p">(</span><span class="s1">'actor_actor_id_seq'</span><span class="p">::</span><span class="n">regclass</span><span class="p">)</span>
+ <span class="n">first_name</span>  <span class="o">|</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>       <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">last_name</span>   <span class="o">|</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>       <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">last_update</span> <span class="o">|</span> <span class="k">timestamp</span> <span class="k">without</span> <span class="n">time</span> <span class="k">zone</span> <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="n">now</span><span class="p">()</span>
+<span class="n">Indexes</span><span class="p">:</span>
+    <span class="nv">"actor_pkey"</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">btree</span> <span class="p">(</span><span class="n">actor_id</span><span class="p">)</span>
+    <span class="nv">"idx_actor_last_name"</span> <span class="n">btree</span> <span class="p">(</span><span class="n">last_name</span><span class="p">)</span>
+<span class="n">Referenced</span> <span class="k">by</span><span class="p">:</span>
+    <span class="k">TABLE</span> <span class="nv">"film_actor"</span> <span class="k">CONSTRAINT</span> <span class="nv">"film_actor_actor_id_fkey"</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">actor</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CASCADE</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">RESTRICT</span>
+<span class="n">Triggers</span><span class="p">:</span>
+    <span class="n">last_updated</span> <span class="k">BEFORE</span> <span class="k">UPDATE</span> <span class="k">ON</span> <span class="n">actor</span> <span class="k">FOR</span> <span class="k">EACH</span> <span class="k">ROW</span> <span class="k">EXECUTE</span> <span class="k">PROCEDURE</span> <span class="n">last_updated</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>There are also other <code class="highlighter-rouge">\d</code> describe functions, among them:</p>
+
+<p><code class="highlighter-rouge">\dn</code>: list schemas, where are collections of objects (tables, functions) grouped together under a common name</p>
+
+<p><code class="highlighter-rouge">\df</code>: list functions</p>
+
+<p>You can get a complete list of backslash commands with <code class="highlighter-rouge">\?</code>.</p>
+
+<h2 id="other-programs">Other programs<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#other-programs" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Each database client will have its own way to show you information about the tables in the database.</p>
+
+<h2 id="useful-notes">Useful Notes<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#useful-notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>A useful setting for psql is:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">\</span><span class="n">pset</span> <span class="n">format</span> <span class="n">wrapped</span>
+</code></pre></div></div>
+
+<p>Comments in SQL files:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* this is a comment; it can 
+span multiple lines */</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">actor</span><span class="p">;</span> <span class="cm">/* this is also a comment */</span>
+
+<span class="c1">-- this is a single line comment</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">from</span> <span class="n">actor</span><span class="p">;</span> <span class="c1">-- another single line comment</span>
+</code></pre></div></div>
+
+<h1 id="select"><code class="highlighter-rouge">SELECT</code></h1>
+
+<p>Select is the command we use most often in SQL.  It lets us select data (specified rows and columns) from one or more tables.  Columns are selected by name, rows are selected with conditional statements (values of a particular column meeting some criteria).</p>
+
+<p>The basic format of a <code class="highlighter-rouge">SELECT</code> command is</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">&lt;</span><span class="n">columns</span><span class="o">&gt;</span>
+<span class="k">FROM</span> <span class="o">&lt;</span><span class="k">table</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>For example:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">actor_id</span><span class="p">,</span> <span class="n">first_name</span>
+<span class="k">FROM</span> <span class="n">actor</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">SELECT</code> and <code class="highlighter-rouge">FROM</code> are reserved keywords.  SQL is case-insensitive, but many times you’ll see the key terms in all caps.  Note that you use a semicolon <code class="highlighter-rouge">;</code> to end the statement.  You can also split a SQL statement across multiple lines – the space between the terms doesn’t matter (a new line counts as space).</p>
+
+<p>Let’s start with the customer table.   The columns in the customer table are:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dvdrental</span><span class="o">=#</span> <span class="err">\</span><span class="n">d</span> <span class="n">customer</span>
+                                          <span class="k">Table</span> <span class="nv">"public.customer"</span>
+   <span class="k">Column</span>    <span class="o">|</span>            <span class="k">Type</span>             <span class="o">|</span>                           <span class="n">Modifiers</span>                            
+<span class="c1">-------------+-----------------------------+----------------------------------------------------------------</span>
+ <span class="n">customer_id</span> <span class="o">|</span> <span class="n">integer</span>                     <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="n">nextval</span><span class="p">(</span><span class="s1">'customer_customer_id_seq'</span><span class="p">::</span><span class="n">regclass</span><span class="p">)</span>
+ <span class="n">store_id</span>    <span class="o">|</span> <span class="n">smallint</span>                    <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">first_name</span>  <span class="o">|</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>       <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">last_name</span>   <span class="o">|</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>       <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">email</span>       <span class="o">|</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>       <span class="o">|</span> 
+ <span class="n">address_id</span>  <span class="o">|</span> <span class="n">smallint</span>                    <span class="o">|</span> <span class="k">not</span> <span class="k">null</span>
+ <span class="n">activebool</span>  <span class="o">|</span> <span class="n">boolean</span>                     <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="k">true</span>
+ <span class="n">create_date</span> <span class="o">|</span> <span class="n">date</span>                        <span class="o">|</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="p">(</span><span class="s1">'now'</span><span class="p">::</span><span class="n">text</span><span class="p">)::</span><span class="n">date</span>
+ <span class="n">last_update</span> <span class="o">|</span> <span class="k">timestamp</span> <span class="k">without</span> <span class="n">time</span> <span class="k">zone</span> <span class="o">|</span> <span class="k">default</span> <span class="n">now</span><span class="p">()</span>
+ <span class="n">active</span>      <span class="o">|</span> <span class="n">integer</span>                     <span class="o">|</span> 
+<span class="n">Indexes</span><span class="p">:</span>
+    <span class="nv">"customer_pkey"</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">btree</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">)</span>
+    <span class="nv">"idx_fk_address_id"</span> <span class="n">btree</span> <span class="p">(</span><span class="n">address_id</span><span class="p">)</span>
+    <span class="nv">"idx_fk_store_id"</span> <span class="n">btree</span> <span class="p">(</span><span class="n">store_id</span><span class="p">)</span>
+    <span class="nv">"idx_last_name"</span> <span class="n">btree</span> <span class="p">(</span><span class="n">last_name</span><span class="p">)</span>
+<span class="k">Foreign</span><span class="o">-</span><span class="k">key</span> <span class="k">constraints</span><span class="p">:</span>
+    <span class="nv">"customer_address_id_fkey"</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">address_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">address</span><span class="p">(</span><span class="n">address_id</span><span class="p">)</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CASCADE</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">RESTRICT</span>
+<span class="n">Referenced</span> <span class="k">by</span><span class="p">:</span>
+    <span class="k">TABLE</span> <span class="nv">"payment"</span> <span class="k">CONSTRAINT</span> <span class="nv">"payment_customer_id_fkey"</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">customer</span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CASCADE</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">RESTRICT</span>
+    <span class="k">TABLE</span> <span class="nv">"rental"</span> <span class="k">CONSTRAINT</span> <span class="nv">"rental_customer_id_fkey"</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">customer</span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CASCADE</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">RESTRICT</span>
+<span class="n">Triggers</span><span class="p">:</span>
+    <span class="n">last_updated</span> <span class="k">BEFORE</span> <span class="k">UPDATE</span> <span class="k">ON</span> <span class="n">customer</span> <span class="k">FOR</span> <span class="k">EACH</span> <span class="k">ROW</span> <span class="k">EXECUTE</span> <span class="k">PROCEDURE</span> <span class="n">last_updated</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>To select particular columns we can name the columns:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">store_id</span> <span class="k">FROM</span> <span class="n">customer</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Generally with default <code class="highlighter-rouge">psql</code> settings we will get paged output.  Hit space to get more.  Type <code class="highlighter-rouge">q</code> or control-c to get your database prompt back.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> customer_id | store_id 
+-------------+----------
+         524 |        1
+           1 |        1
+           2 |        1
+           3 |        1
+           4 |        2
+           5 |        1
+           6 |        2
+           7 |        1
+           8 |        2
+           9 |        2
+
+</code></pre></div></div>
+
+<p>The data you get back are called a result set.</p>
+
+<p>A pipe character <code class="highlighter-rouge">|</code> delimits columns.</p>
+
+<p>If we want all of the columns, we can use <code class="highlighter-rouge">*</code> as shorthand:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">customer</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> customer_id | store_id | first_name  |  last_name   |                  email                   | address_id | activebool | create_date |       last_update       | active 
+-------------+----------+-------------+--------------+------------------------------------------+------------+------------+-------------+-------------------------+--------
+         524 |        1 | Jared       | Ely          | jared.ely@sakilacustomer.org             |        530 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           1 |        1 | Mary        | Smith        | mary.smith@sakilacustomer.org            |          5 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           2 |        1 | Patricia    | Johnson      | patricia.johnson@sakilacustomer.org      |          6 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           3 |        1 | Linda       | Williams     | linda.williams@sakilacustomer.org        |          7 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           4 |        2 | Barbara     | Jones        | barbara.jones@sakilacustomer.org         |          8 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           5 |        1 | Elizabeth   | Brown        | elizabeth.brown@sakilacustomer.org       |          9 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           6 |        2 | Jennifer    | Davis        | jennifer.davis@sakilacustomer.org        |         10 | t          | 2006-02-14  | 2013-05-26 14:49:45.738 |      1
+           7 |        1 | Maria       | Miller       | maria.miller@sakilacustomer.org          |         11 | t          |           
+</code></pre></div></div>
+
+<h3 id="exercise">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Select the film_id and title columns from the film table.</p>
+
+<h2 id="limit"><code class="highlighter-rouge">LIMIT</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#limit" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Instead of getting all rows, we can specify a limit of the number of rows to retrieve.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">store_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span> 
+<span class="k">FROM</span> <span class="n">customer</span>
+<span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">customer_id</span> <span class="o">|</span> <span class="n">store_id</span> <span class="o">|</span> <span class="n">first_name</span> <span class="o">|</span> <span class="n">last_name</span> 
+<span class="c1">-------------+----------+------------+-----------</span>
+         <span class="mi">524</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Jared</span>      <span class="o">|</span> <span class="n">Ely</span>
+           <span class="mi">1</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Mary</span>       <span class="o">|</span> <span class="n">Smith</span>
+           <span class="mi">2</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Patricia</span>   <span class="o">|</span> <span class="n">Johnson</span>
+           <span class="mi">3</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Linda</span>      <span class="o">|</span> <span class="n">Williams</span>
+           <span class="mi">4</span> <span class="o">|</span>        <span class="mi">2</span> <span class="o">|</span> <span class="n">Barbara</span>    <span class="o">|</span> <span class="n">Jones</span>
+<span class="p">(</span><span class="mi">5</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Here, we got all of the output on a single page, and we can see the row count output at the end.</p>
+
+<p>The order of the rows is not random, but it is not guaranteed to be in any particular order by default either.  The order can change over time, and it is affected by which rows have been accessed recently.</p>
+
+<h3 id="exercise-1">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Select 5 rows from the film table, getting all of the columns.</p>
+
+<h2 id="offset"><code class="highlighter-rouge">OFFSET</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#offset" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>We can  skip rows that would normally be at the beginning of the result set with offset.  This is useful usually when we sort the result set in a particular order, something we’ll get to later.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">store_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span> 
+<span class="k">FROM</span> <span class="n">customer</span>
+<span class="k">LIMIT</span> <span class="mi">5</span>
+<span class="k">OFFSET</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">customer_id</span> <span class="o">|</span> <span class="n">store_id</span> <span class="o">|</span> <span class="n">first_name</span> <span class="o">|</span> <span class="n">last_name</span> 
+<span class="c1">-------------+----------+------------+-----------</span>
+          <span class="mi">10</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Dorothy</span>    <span class="o">|</span> <span class="n">Taylor</span>
+          <span class="mi">11</span> <span class="o">|</span>        <span class="mi">2</span> <span class="o">|</span> <span class="n">Lisa</span>       <span class="o">|</span> <span class="n">Anderson</span>
+          <span class="mi">12</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span> <span class="n">Nancy</span>      <span class="o">|</span> <span class="n">Thomas</span>
+          <span class="mi">13</span> <span class="o">|</span>        <span class="mi">2</span> <span class="o">|</span> <span class="n">Karen</span>      <span class="o">|</span> <span class="n">Jackson</span>
+          <span class="mi">14</span> <span class="o">|</span>        <span class="mi">2</span> <span class="o">|</span> <span class="n">Betty</span>      <span class="o">|</span> <span class="n">White</span>
+<span class="p">(</span><span class="mi">5</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="where"><code class="highlighter-rouge">WHERE</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#where" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Instead of getting all rows or a specific number of rows, we can also specify which rows we want by specifying conditions on the values of particular columns (e.g. equals, greater than, less than).</p>
+
+<p>For example, we can select rows from <code class="highlighter-rouge">customer</code> that have a <code class="highlighter-rouge">store_id=2</code> with:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">customer</span> <span class="k">WHERE</span> <span class="n">store_id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>(<em>Note: Going forward, output will only be included when there’s something about it to discuss.</em>)</p>
+
+<p>You can combine conditions together with <code class="highlighter-rouge">AND</code> and <code class="highlighter-rouge">OR</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">customer</span> <span class="k">WHERE</span> <span class="n">store_id</span><span class="o">=</span><span class="mi">2</span> <span class="k">AND</span> <span class="n">customer_id</span><span class="o">=</span><span class="mi">400</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note that string (text) values in SQL are surrounded with single quotes:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">staff</span> <span class="k">WHERE</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">'Jon'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">WHERE</code> operators include:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Operator</th>
+      <th style="text-align: left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">=</td>
+      <td style="text-align: left">Equal</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">&gt;</td>
+      <td style="text-align: left">Greater than</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">&lt;</td>
+      <td style="text-align: left">Less than</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">&gt;=</td>
+      <td style="text-align: left">Greater than or equal</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">&lt;=</td>
+      <td style="text-align: left">Less than or equal</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">&lt;&gt; or !=</td>
+      <td style="text-align: left">Not equal</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">AND</td>
+      <td style="text-align: left">Logical operator AND</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">OR</td>
+      <td style="text-align: left">Logical operator OR</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">NOT</td>
+      <td style="text-align: left">To negate boolean values</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">staff</span> <span class="k">where</span> <span class="n">first_name</span> <span class="o">!=</span> <span class="s1">'Jon'</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">staff</span> <span class="k">where</span> <span class="n">first_name</span> <span class="o">&lt;&gt;</span> <span class="s1">'Jon'</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<h3 id="exercises">Exercises<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercises" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Select rows from the film table where the film_id is less than 4.</p>
+
+<p>Select rows from the film table where the rating is PG.</p>
+
+<p>Select rows from the film table where the rating is PG or G.</p>
+
+<h3 id="between"><code class="highlighter-rouge">BETWEEN</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#between" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p><code class="highlighter-rouge">BETWEEN</code> is shorthand for <code class="highlighter-rouge"># &lt;= x &lt;= #</code>.  The endpoints are inclusive:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">WHERE</span> <span class="n">film_id</span> <span class="k">BETWEEN</span> <span class="mi">1</span> <span class="k">AND</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+<h3 id="in"><code class="highlighter-rouge">IN</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#in" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p><code class="highlighter-rouge">IN</code> lets you specify a lot of values that you would otherwise join together with an <code class="highlighter-rouge">OR</code> statement:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">WHERE</span> <span class="n">film_id</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="exercise-2">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise-2" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Select rows from the actor table where the first name is Angela, Angelina, or Audrey using <code class="highlighter-rouge">IN</code>.</p>
+
+<hr>
+
+<p>Break for exercises: <a href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html">part1_exercises.md</a> - sections Describe Commands and Select.</p>
+
+<hr>
+
+<h3 id="is-null"><code class="highlighter-rouge">IS NULL</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#is-null" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Missing data in SQL is <code class="highlighter-rouge">NULL</code>.  <code class="highlighter-rouge">NULL</code> values occur where there is no data entered for a specific row and column.  You can test for <code class="highlighter-rouge">NULL</code> with <code class="highlighter-rouge">IS NULL</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">address</span> <span class="k">WHERE</span> <span class="n">address2</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">NULL</code> is different than an empty string (‘’):</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">address</span> <span class="k">WHERE</span> <span class="n">address2</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>There is also the opposite: <code class="highlighter-rouge">IS NOT NULL</code>.</p>
+
+<p>You cannot use <code class="highlighter-rouge">=NULL</code>.  The following returns no rows, even though there are 4 rows with a <code class="highlighter-rouge">NULL</code> address2:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">address</span> <span class="k">WHERE</span> <span class="n">address2</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">NULL</code> values are omitted from the results of comparison tests.</p>
+
+<h2 id="order-by"><code class="highlighter-rouge">ORDER BY</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#order-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>We can determine the order that our results are shown in:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">film_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>By default, sorting is done in ascending (<code class="highlighter-rouge">ASC</code>) order.  To get the reverse order of sorting, use <code class="highlighter-rouge">DESC</code> (descending):</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">film_id</span> <span class="k">DESC</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This is often useful to combine with <code class="highlighter-rouge">LIMIT</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">film_id</span> <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>And with <code class="highlighter-rouge">OFFSET</code> to view results in smaller chunks:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">film</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">film_id</span> <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="mi">5</span> <span class="k">OFFSET</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can order by multiple columns:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">rental_id</span> <span class="k">FROM</span> <span class="n">rental</span> 
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">rental_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercise-3">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise-3" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Order the rows in city by country_id and then by city.</p>
+
+<h2 id="distinct"><code class="highlighter-rouge">DISTINCT</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#distinct" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p><code class="highlighter-rouge">DISTINCT</code> removes duplicate rows from the result.  It comes before the list of column names, and applies to the combination of all columns.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">staff_id</span> <span class="k">FROM</span> <span class="n">payment</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">amount</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">amount</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr>
+
+<p>Break for exercises: <a href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html">part1_exercises.md</a> - sections for Like, Distinct, and Order by exercises</p>
+
+<hr>
+
+<h2 id="functions-and-arithmetic">Functions and Arithmetic<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#functions-and-arithmetic" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>There are many common, built-in functions in PostgreSQL.  See PostgreSQL Documentation for a <a href="https://www.postgresql.org/docs/current/static/functions.html">full list</a> or <a href="https://www.postgresql.org/docs/current/static/functions-math.html">list of mathematical functions</a>.</p>
+
+<p>For example, we can get the minimum or maximum of a column from results:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">min</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">max</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These functions apply to the result set, not the full table:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">max</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">WHERE</span> <span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can also do arithmetic:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">rental_duration</span><span class="p">,</span> <span class="n">rental_duration</span> <span class="o">+</span> <span class="mi">1</span> 
+<span class="k">FROM</span> <span class="n">film</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Functions need to be used the part of the query where you specify the values (or other values) that you are selecting, not the where clause.  The following doesn’t work:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">WHERE</span> <span class="n">amount</span> <span class="o">=</span> <span class="k">max</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dvdrental=# SELECT customer_id FROM payment WHERE amount = max(amount);
+ERROR:  aggregate functions are not allowed in WHERE
+LINE 1: SELECT customer_id FROM payment WHERE amount = max(amount);
+                                                       ^
+</code></pre></div></div>
+
+<p>To achieve this, you need to use a subquery, which we’ll learn about in the next part.</p>
+
+<p>NOTE: the set of provided functions is not standard across different implementations of SQL, although there are some common core functions.</p>
+
+<p>If we wanted to count the number of distinct values in a column, we can use the count function in combination with <code class="highlighter-rouge">distinct</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="k">distinct</span> <span class="n">postal_code</span><span class="p">)</span> <span class="k">from</span> <span class="n">address</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Count without distinct will count the number of rows <em>that aren’t null</em>.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="n">address2</span><span class="p">)</span> <span class="k">from</span> <span class="n">address</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Or we can use <code class="highlighter-rouge">*</code> to count the total number of rows, including any with NULL in a column:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">address</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">NULL</code> is not counted by <code class="highlighter-rouge">count</code>, even though it is returned as a result by <code class="highlighter-rouge">DISTINCT</code>.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">address2</span> <span class="k">from</span> <span class="n">address</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">address2</span><span class="p">)</span> <span class="k">from</span> <span class="n">address</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercises-1">Exercises<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercises-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>What’s the most you’d have to pay to replace a lost film from this dvd rental store?  What’s the least?</p>
+
+<p>Use the count function to determine the number of different languages in the language table.</p>
+
+<h2 id="group-by"><code class="highlighter-rouge">GROUP BY</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#group-by" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p><code class="highlighter-rouge">GROUP BY</code> is used to divide results into groups, where you then apply some summary function to each group.  You will generally select the column you’re grouping by, and then a summary function.  The most common operation is counting.  We use <code class="highlighter-rouge">count(*)</code> to count the number of rows in each group.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">rental</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>We can use other functions as well.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="k">avg</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can group by multiple columns:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> 
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Sort the above</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> 
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">DESC</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>All columns in the <code class="highlighter-rouge">SELECT</code> part of the statement have to be in the <code class="highlighter-rouge">GROUP BY</code> part, or you’ll get an error:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dvdrental</span><span class="o">=#</span> <span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">;</span>
+<span class="n">ERROR</span><span class="p">:</span>  <span class="k">column</span> <span class="nv">"payment.amount"</span> <span class="n">must</span> <span class="n">appear</span> <span class="k">in</span> <span class="n">the</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">clause</span> <span class="k">or</span> <span class="n">be</span> <span class="n">used</span> <span class="k">in</span> <span class="n">an</span> <span class="k">aggregate</span> <span class="k">function</span>
+<span class="n">LINE</span> <span class="mi">1</span><span class="p">:</span> <span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="k">c</span><span class="p">...</span>
+</code></pre></div></div>
+
+<h3 id="exercise-4">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise-4" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Count the number of cities for each country id in the city table.  Order the results by count(*).</p>
+
+<h2 id="having"><code class="highlighter-rouge">HAVING</code><a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#having" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p><code class="highlighter-rouge">HAVING</code> is similar to a <code class="highlighter-rouge">WHERE</code> clause but it applies to the result of a <code class="highlighter-rouge">GROUP BY</code> operation; <code class="highlighter-rouge">WHERE</code> applies before data are grouped by <code class="highlighter-rouge">GROUP BY</code>;</p>
+
+<p>We can get total amount spent by each customer with:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>But how do we just get the customers that spent more than $200?</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">customer_id</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">payment</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">customer_id</span>
+<span class="k">HAVING</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="exercise-5">Exercise<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#exercise-5" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Select the <code class="highlighter-rouge">country_id</code>s from the city table that have more than 20 cities associated with them (<code class="highlighter-rouge">country_id</code>s that appear more than 20 times).</p>
+
+<h2 id="dates">Dates<a class="anchorjs-link " href="https://nuitrcs.github.io/databases_workshop/sql/part1.html#dates" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>So far, we’ve selected numeric values and string values.  There are also other types, with one of the most common of those being dates.  Dates are in the format <code class="highlighter-rouge">YYYY-MM-DD</code>.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> 
+<span class="k">FROM</span> <span class="n">customer</span> 
+<span class="k">WHERE</span> <span class="n">create_date</span> <span class="o">=</span> <span class="s1">'2006-02-14'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Timestamps are dates with a time (and possibly timezone) also attached.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">rental_date</span> 
+<span class="k">FROM</span> <span class="n">rental</span> 
+<span class="k">WHERE</span> <span class="n">rental_date</span> <span class="o">&lt;</span> <span class="s1">'2005-05-25'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dvdrental</span><span class="o">=#</span> <span class="k">SELECT</span> <span class="n">rental_date</span> <span class="k">FROM</span> <span class="n">rental</span> <span class="k">WHERE</span> <span class="n">rental_date</span> <span class="o">&lt;</span> <span class="s1">'2005-05-25'</span><span class="p">;</span>
+     <span class="n">rental_date</span>     
+<span class="c1">---------------------</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">22</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">30</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">22</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">33</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">03</span><span class="p">:</span><span class="mi">39</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span><span class="mi">41</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">05</span><span class="p">:</span><span class="mi">21</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">07</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">53</span>
+ <span class="mi">2005</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span> <span class="mi">23</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">46</span>
+<span class="p">(</span><span class="mi">8</span> <span class="k">rows</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This will get you everything before 2005-05-25 00:00:00.</p>
+
+<p>Note that you want to use <code class="highlighter-rouge">&gt;</code> or <code class="highlighter-rouge">&lt;</code> with timestamps, because date equality for just the date part doesn’t work:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">rental_date</span> 
+<span class="k">FROM</span> <span class="n">rental</span>
+<span class="k">WHERE</span> <span class="n">rental_date</span> <span class="o">=</span> <span class="s1">'2005-05-24'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr>
+
+<p>Break for exercises: <a href="https://nuitrcs.github.io/databases_workshop/sql/part1_exercises.html">part1_exercises.md</a> - remaining sections</p>
+
+<hr>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/nuitrcs/databases_workshop/edit/master/sql/part1.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="./SQL Part 1 _ databases_workshop_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  
+
+</body></html>
